@@ -1,6 +1,11 @@
 const express = require('express');
-const { auth } = require('../middleware/auth');
 const sheetController = require('../controllers/sheetController');
+
+// JWT 인증 활성화 여부 확인
+const jwtAuthEnabled = process.env.ENABLE_JWT_AUTH !== 'false';
+
+// 조건부로 auth 미들웨어 가져오기
+const { auth } = jwtAuthEnabled ? require('../middleware/auth') : { auth: (req, res, next) => next() };
 
 const router = express.Router();
 
@@ -27,7 +32,7 @@ const router = express.Router();
  *       500:
  *         description: 서버 오류가 발생했습니다.
  */
-router.get('/:spreadsheetId/metadata', auth, sheetController.getSheetMetadata);
+router.get('/:spreadsheetId/metadata', jwtAuthEnabled ? auth : (req, res, next) => next(), sheetController.getSheetMetadata);
 
 /**
  * @swagger
@@ -125,7 +130,7 @@ router.get('/:spreadsheetId/metadata', auth, sheetController.getSheetMetadata);
  *       500:
  *         description: 서버 오류가 발생했습니다.
  */
-router.get('/:spreadsheetId/data/:sheetName', auth, sheetController.getSheetData);
+router.get('/:spreadsheetId/data/:sheetName', jwtAuthEnabled ? auth : (req, res, next) => next(), sheetController.getSheetData);
 
 /**
  * @swagger
