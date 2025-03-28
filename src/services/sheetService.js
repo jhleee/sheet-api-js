@@ -140,26 +140,17 @@ class SheetService {
 
         switch (operator) {
           case '==':
-            return String(fieldValue) === compareValue;
+            return String(fieldValue) === String(compareValue);
           case '!=':
-            return String(fieldValue) !== compareValue;
+            return String(fieldValue) !== String(compareValue);
           case '>=':
-            // 숫자 변환 오류 처리
-            if (isNaN(Number(fieldValue)) || isNaN(Number(compareValue)))
-              return false;
-            return Number(fieldValue) >= Number(compareValue);
+            return String(fieldValue) >= String(compareValue);
           case '<=':
-            if (isNaN(Number(fieldValue)) || isNaN(Number(compareValue)))
-              return false;
-            return Number(fieldValue) <= Number(compareValue);
-          case '>':
-            if (isNaN(Number(fieldValue)) || isNaN(Number(compareValue)))
-              return false;
-            return Number(fieldValue) > Number(compareValue);
-          case '<':
-            if (isNaN(Number(fieldValue)) || isNaN(Number(compareValue)))
-              return false;
-            return Number(fieldValue) < Number(compareValue);
+            return String(fieldValue) <= String(compareValue);
+          case '>>':
+            return String(fieldValue) > String(compareValue);
+          case '<<':
+            return String(fieldValue) < String(compareValue);
           case '~=':
             return String(fieldValue).toLowerCase().includes(String(compareValue).toLowerCase());
           case '!~':
@@ -170,29 +161,29 @@ class SheetService {
             return String(fieldValue).toLowerCase().endsWith(String(compareValue).toLowerCase());
           case '=~':
             try {
-              return new RegExp(compareValue, 'i').test(String(fieldValue));
+              return new RegExp(String(compareValue), 'i').test(String(fieldValue));
             } catch (e) {
               // 정규표현식 오류 처리
               return false;
             }
           case '!r': // 정규식 미매칭 (이전에는 !~ 이름 중복 문제가 있었음)
             try {
-              return !new RegExp(compareValue, 'i').test(String(fieldValue));
+              return !new RegExp(String(compareValue), 'i').test(String(fieldValue));
             } catch (e) {
               // 정규표현식 오류 처리
               return true;  // 정규식 오류면 매칭되지 않는 것으로 간주
             }
           case 'in':
-            return compareValue.split(',').map(v => v.trim()).includes(String(fieldValue));
+            return String(compareValue).split(',').map(v => v.trim()).includes(String(fieldValue));
           case '!n':
-            return !compareValue.split(',').map(v => v.trim()).includes(String(fieldValue));
+            return !String(compareValue).split(',').map(v => v.trim()).includes(String(fieldValue));
           case 'is':
-            return fieldValue === null;
+            return String(fieldValue) === null;
           case '!s':
-            return fieldValue !== null;
+            return String(fieldValue) !== null;
           default:
             // 기본 동작: 연산자가 없는 경우 정확한 값 비교
-            return String(fieldValue) === value;
+            return String(fieldValue) === String(compareValue);
         }
       });
     });
